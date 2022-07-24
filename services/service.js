@@ -6,7 +6,7 @@ module.exports = {
         if (error) {
           reject(error);
         }
-        resolve(result);
+        resolve(result ? result.rows : []);
       });
     });
   },

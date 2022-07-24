@@ -12,7 +12,6 @@ app.use(express.json());
 
 routes(app);
 app.listen(process.env.PORT | 3001, () => {
-  db.createTables();
   console.log(`api running at port:${process.env.PORT}`);
 });
 

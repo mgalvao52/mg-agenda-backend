@@ -7,15 +7,19 @@ module.exports = class usuarioService {
     try {
       this.validate(usuario);
       const usuarioDb = await service.query(
-        "select * from usuario where email = ?",
-        usuario.email
+        "select * from usuario where email = $1",
+        [usuario.email]
       );
       if (usuarioDb.length > 0) {
         throw new ValidationError({ message: "email já existe" });
       }
       const hash = await encrypt(usuario.senha);
       usuario.setSenha(hash);
-      const result = await service.query("insert into usuario set ?", usuario);
+      const result = await service.query(
+        `insert into usuario
+      (nome,email,senha) values($1,$2,$3)`,
+        [usuario.nome, usuario.email, usuario.senha]
+      );
       return result;
     } catch (error) {
       throw error;
@@ -25,14 +29,14 @@ module.exports = class usuarioService {
     try {
       this.validate(usuario);
       const usuarioDb = await service.query(
-        "select * from usuario where id = ?",
-        usuario.id
+        "select * from usuario where id = $1",
+        [usuario.id]
       );
       if (usuarioDb.length <= 0) {
         throw new ValidationError({ message: "usuario não encontrado" });
       }
       const result = await service.query(
-        "update usuario set nome=? where id = ?",
+        `update usuario set nome=$1 where id = $2`,
         [usuario.nome, usuario.id]
       );
       return result;
@@ -44,7 +48,7 @@ module.exports = class usuarioService {
     try {
       validation.validateNull({ email: email, senha: senha });
       const result = await service.query(
-        "select * from usuario where email = ?",
+        "select * from usuario where email = $1",
         [email]
       );
       if (result.length <= 0) {

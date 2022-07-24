@@ -9,7 +9,18 @@ module.exports = class tarefaService {
   static async insert(tarefa) {
     try {
       this.validateTarefa(tarefa);
-      const result = await service.query("insert into tarefa set ?", tarefa);
+      const result = await service.query(
+        `insert into 
+      tarefa(descricao,titulo,data,concluida,usuarioId)
+      values($1,$2,$3,$4,$5) returning *`,
+        [
+          tarefa.descricao,
+          tarefa.titulo,
+          tarefa.data,
+          tarefa.concluida,
+          tarefa.usuarioId,
+        ]
+      );
       return result;
     } catch (error) {
       throw error;
@@ -28,7 +39,7 @@ module.exports = class tarefaService {
         });
       }
       const result = await service.query(
-        "update tarefa set descricao = ?,titulo = ?, data = ?, concluida = ?",
+        "update tarefa set descricao = $1,titulo = $2, data = $3, concluida = $4",
         [tarefa.descricao, tarefa.titulo, tarefa.data, tarefa.concluida]
       );
       return result;
@@ -38,7 +49,7 @@ module.exports = class tarefaService {
   }
   static async delete(id) {
     try {
-      const result = await service.query("delete from tarefa where id = ?", [
+      const result = await service.query("delete from tarefa where id = $1", [
         id,
       ]);
       return result;
@@ -48,7 +59,7 @@ module.exports = class tarefaService {
   }
   static async getById(id) {
     try {
-      const result = await service.query("select * from tarefa where id = ?", [
+      const result = await service.query("select * from tarefa where id = $1", [
         id,
       ]);
       if (result.length <= 0) {
@@ -66,7 +77,7 @@ module.exports = class tarefaService {
       const result = await service.query(
         `select t.*,u.nome as usuario from tarefa t 
         join usuario u on t.usuarioId = u.id
-        where t.usuarioId = ? and data >= ? and concluida = 0`,
+        where t.usuarioId = $1 and data >= $2 and concluida = false`,
         [idUsuario, date]
       );
       return result;
@@ -79,7 +90,7 @@ module.exports = class tarefaService {
       const result = await service.query(
         `select t.*,u.nome as usuario from tarefa t 
         join usuario u on t.usuarioId = u.id
-        where t.usuarioId = ? and t.categoriaId = ? and concluida = 0`,
+        where t.usuarioId = $1 and t.categoriaId = $2 and concluida = false`,
         [idUsuario, idCategoria]
       );
       return result;
@@ -92,7 +103,7 @@ module.exports = class tarefaService {
       let tarefa = await this.getById(id);
       if (tarefa) {
         const result = await service.query(
-          "update tarefa set concluida = 1 where id = ?",
+          "update tarefa set concluida = true where id = $1",
           [id]
         );
         return result;
