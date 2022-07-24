@@ -11,7 +11,7 @@ app.use(bodyParser.json({ urlencoded: true }));
 app.use(express.json());
 
 routes(app);
-app.listen(process.env.PORT | 3001, () => {
+app.listen(process.env.PORT || 3001, () => {
   console.log(`api running at port:${process.env.PORT}`);
 });
 
