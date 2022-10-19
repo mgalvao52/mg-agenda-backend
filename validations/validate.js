@@ -32,7 +32,10 @@ module.exports = {
     }
   },
   validatePassword: (field) => {
-    let regex = /(?=.*[^0-9a-zA-Z)(?=.*[a-zA-Z])(?=.*[0-9])\S{6,}$/gm;
+    let regex =
+      /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{6,}$/gm;
+    //^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{6,}$
+    //(?=.*[^0-9a-zA-Z)(?=.*[a-zA-Z])(?=.*[0-9])\S{6,}$
     if (!regex.test(field)) {
       throw new ValidationError({
         message:
